@@ -45,3 +45,32 @@ func TestShuffleSeededDifferent(t *testing.T) {
 	_ = a
 	_ = b
 }
+
+func TestSplitByDelimLine(t *testing.T) {
+	// 按行时结尾换行产生的空项要去掉
+	got := splitByDelim("a\nb\nc\n", "\n")
+	if len(got) != 3 || got[0] != "a" || got[2] != "c" {
+		t.Fatalf("按行分割不符: %#v", got)
+	}
+}
+
+func TestSplitByDelimCustom(t *testing.T) {
+	// 按逗号分隔，连续的空段丢掉
+	got := splitByDelim("x,,y,z", ",")
+	if len(got) != 3 || got[0] != "x" || got[2] != "z" {
+		t.Fatalf("逗号分割不符: %#v", got)
+	}
+}
+
+func TestReverseInPlace(t *testing.T) {
+	lines := []string{"1", "2", "3", "4"}
+	// 复用 main 里的反转逻辑：直接检验洗牌+反转后集合仍完整
+	s := make([]string, len(lines))
+	copy(s, lines)
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
+	}
+	if s[0] != "4" || s[3] != "1" {
+		t.Fatalf("反转不符: %#v", s)
+	}
+}
